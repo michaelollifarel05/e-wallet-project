@@ -23,10 +23,8 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	
-	// var returnCheck = ValidateRegister(input)
-	var returnCheck = 0
+	var returnCheck = ValidateRegister(input)
+	// var returnCheck = 0
 	if returnCheck == 0 {
 		ToDatabase.Create(&input)
 		// c.JSON(http.StatusOK, gin.H{"return":"register success", "status": "success", "code": 200})
