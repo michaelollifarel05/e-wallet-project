@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"mypackage/variable"
 	"mypackage/database"
+	"fmt"
+	"strconv"
+
 )
 
 
@@ -12,16 +15,22 @@ var ToDatabase = database.ConnectDB()
 
 func Register(c *gin.Context) {
 	var input variable.User
+	// var account variable.Account
 
-	if err := c.ShouldBindJSON(&input); 
+	fmt.Println(input.ID)
+	if err := c.ShouldBindJSON(&input);
 	err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var returnCheck = ValidateRegister(input)
+
+	
+	// var returnCheck = ValidateRegister(input)
+	var returnCheck = 0
 	if returnCheck == 0 {
-		ToDatabase.Save(&input)
-		c.JSON(http.StatusOK, gin.H{"return":"register success", "status": "success", "code": 200})
+		ToDatabase.Create(&input)
+		// c.JSON(http.StatusOK, gin.H{"return":"register success", "status": "success", "code": 200})
+		c.JSON(http.StatusOK, gin.H{"return": input})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"return":"Failed to register","status": "User already registered","code": 400})		
 	}
@@ -35,6 +44,15 @@ func SearchUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, input)	
 	
+}
+
+func TopUp(c *gin.Context) {
+	var input variable.Account
+	ToDatabase.Select("balance").Where("user_id = ?", c.Param("id")).Find(&input)
+	time, _ := strconv.Atoi(c.Param("amount"))
+	var newBalance = input.Balance + time	
+	ToDatabase.Model(&input).Where("user_id = ?", c.Param("id")).Update("balance",newBalance) 
+	c.JSON(http.StatusOK, input)	
 }
 
 func ShowAllUsers(c *gin.Context) {

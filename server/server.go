@@ -26,6 +26,7 @@ func setupRouter() *gin.Engine {
 	r.POST("/register", router.Register)
 	r.GET("/search-user/:name", router.SearchUser)
 	r.GET("/show-all-users", router.ShowAllUsers)
+	r.POST("/top-up/:id/:amount", router.TopUp)
 	return r
  }
 
